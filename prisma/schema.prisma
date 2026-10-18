@@ -1,0 +1,188 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  name             String
+  password         String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  trelloCredential TrelloCredential?
+  boards           Board[]
+  boardConfigs     BoardConfig[]
+}
+
+model TrelloCredential {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apiKey    String
+  token     String
+  memberId  String?
+  username  String?
+  fullName  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Board {
+  id           String        @id
+  name         String
+  description  String?       @db.Text
+  url          String?       @db.VarChar(500)
+  closed       Boolean       @default(false)
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  syncedAt     DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  boardConfigs BoardConfig[]
+  trelloLists  TrelloList[]
+  cards        Card[]
+  actions      Action[]
+
+  @@index([userId])
+  @@index([userId, closed])
+}
+
+//BoardConfig untuk analytics
+model BoardConfig {
+  id         String   @id @default(uuid())
+  boardId    String   @unique
+  board      Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  starListId String? //list "In Progress"
+  doneListId String? //list "Done"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model TrelloList {
+  id        String   @id //Trello list ID
+  name      String
+  pos       Float    @default(0)
+  closed    Boolean  @default(false)
+  boardId   String
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cards     Card[]
+
+  @@index([boardId])
+  @@index([boardId, closed])
+}
+
+model Card {
+  id          String    @id // Trello card ID
+  name        String    @db.Text
+  description String?   @db.Text
+  pos         Float     @default(0)
+  closed      Boolean   @default(false)
+  due         DateTime?
+  dueComplete Boolean   @default(false)
+  url         String?   @db.VarChar(500)
+
+  listId String
+  list   TrelloList @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  // ------------------------------------------------------------
+  // Field hasil ekstraksi untuk analytics (cache).
+  // Di-update saat sync, berdasarkan Action terakhir.
+  // ------------------------------------------------------------
+  enteredListAt DateTime? // kapan card masuk list saat ini (untuk aging)
+  completedAt   DateTime? // kapan card pindah ke list "done" (untuk throughput)
+
+  actions Action[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([boardId])
+  @@index([listId])
+  @@index([boardId, closed])
+  @@index([boardId, closed, enteredListAt])
+}
+
+// ============================================================
+// ACTION (log aktivitas dari Trello)
+// ============================================================
+
+model Action {
+  id   String   @id // Trello action ID
+  type String   @db.VarChar(100) // "createCard", "updateCard:idList", dll
+  date DateTime
+
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  cardId String?
+  card   Card?   @relation(fields: [cardId], references: [id], onDelete: SetNull)
+
+  // ------------------------------------------------------------
+  // Field hasil ekstraksi dari data JSON Trello.
+  // Ini yang bikin query analytics cepat — tidak perlu parse JSON.
+  // ------------------------------------------------------------
+  listBeforeId   String?
+  listBeforeName String?
+  listAfterId    String?
+  listAfterName  String?
+
+  memberCreatorId String?
+
+  // ------------------------------------------------------------
+  // Raw payload dari Trello (untuk debug & field tambahan)
+  // ------------------------------------------------------------
+  data Json
+
+  createdAt DateTime @default(now())
+
+  @@index([boardId])
+  @@index([cardId])
+  @@index([date])
+  @@index([type])
+  @@index([boardId, type, date])
+  @@index([boardId, cardId, date])
+}
+
+// ============================================================
+// SYNC LOG (tracking sinkronisasi)
+// ============================================================
+
+model SyncLog {
+  id          String     @id @default(cuid())
+  boardId     String
+  status      SyncStatus
+  message     String?    @db.Text
+  itemsSynced Int        @default(0)
+  startedAt   DateTime   @default(now())
+  finishedAt  DateTime?
+
+  @@index([boardId])
+  @@index([boardId, startedAt])
+}
+
+enum SyncStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
