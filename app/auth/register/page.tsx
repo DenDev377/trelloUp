@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -272,7 +271,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 hover:bg-blue-500 active:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 hover:bg-gray-500 active:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isPending ? (
                   <>
@@ -301,7 +300,7 @@ export default function RegisterPage() {
           Sudah punya akun?{" "}
           <Link
             href="/auth/login"
-            className="font-semibold text-blue-600 hover:text-blue-500 transition-colors underline-offset-4 hover:underline"
+            className="font-semibold text-red-600 hover:text-red-500 transition-colors underline-offset-4 hover:underline"
           >
             Masuk di sini
           </Link>

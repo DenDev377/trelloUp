@@ -31,7 +31,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const user = await prisma.user.findUnique({ where: { email } });
 
         if (!user || !user.password) {
-          return null;
+          return null; // Return null menandakan kredensial tidak valid
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -40,6 +40,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
+        // WAJIB: Kembalikan objek user (jangan sertakan password)
         return {
           id: user.id,
           email: user.email,
@@ -49,12 +50,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    // Menyimpan user.id ke dalam token JWT
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
       }
       return token;
     },
+    // Memasukkan user.id ke session yang bisa diakses di frontend/server
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
@@ -64,4 +67,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 });
 
+// Export handler HTTP untuk Next.js App Router
 export const { GET, POST } = handlers;
