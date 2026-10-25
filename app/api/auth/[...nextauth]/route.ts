@@ -40,7 +40,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        // WAJIB: Kembalikan objek user (jangan sertakan password)
         return {
           id: user.id,
           email: user.email,

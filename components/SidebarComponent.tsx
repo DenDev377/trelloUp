@@ -7,7 +7,7 @@ export default function SidebarComponent() {
     const menuItem = [
         {
             name: "Setting",
-            href: "/dashboard/setting",
+            href: "/dashboard/settings",
             icon: Settings
         }
     ]
