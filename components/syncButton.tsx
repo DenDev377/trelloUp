@@ -15,6 +15,7 @@ export default function SyncButton() {
 
         if (!result.success) {
             alert(result.error)
+            return
         }
         alert(result.message);
         router.refresh();
