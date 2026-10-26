@@ -3,9 +3,11 @@ import { redirect } from "next/navigation";
 import SettingsForm from "./settingsForm";
 import { prisma } from "@/lib/prisma";
 import { CheckCircle2, ExternalLink } from "lucide-react";
+import { connection } from "next/server";
 
 export default async function SettingPage() {
     const session = await auth();
+    await connection();
 
     // 1. Validasi sesi terlebih dahulu sebelum query DB
     if (!session?.user?.id) {
@@ -20,7 +22,7 @@ export default async function SettingPage() {
     });
 
     return (
-        <div className="flex flex-col max-w-4xl mx-auto p-4 md:p-6 space-y-6">
+        <div className="flex flex-col max-w-7xl mx-auto p-4 md:p-6 space-y-6">
             <div>
                 <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">
                     Pengaturan Integrasi

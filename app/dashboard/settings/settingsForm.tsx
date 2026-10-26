@@ -1,7 +1,6 @@
 "use client";
-
 import { useActionState, useState } from "react";
-import { trelloAction, TrelloActionState } from "@/actions/action";
+import { trelloAction, TrelloActionState } from "@/actions/trello/action";
 import { Eye, EyeOff, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
 export default function SettingsForm({

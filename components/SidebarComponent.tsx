@@ -1,4 +1,4 @@
-import { Settings } from "lucide-react"
+import { List, Settings } from "lucide-react"
 import Link from "next/link"
 
 
@@ -6,10 +6,17 @@ export default function SidebarComponent() {
 
     const menuItem = [
         {
+            name: "Board",
+            href: "/dashboard/board-trello",
+            icon: List
+
+        },
+        {
             name: "Setting",
             href: "/dashboard/settings",
             icon: Settings
         }
+
     ]
     return (
         <aside className="bg-white min-h-screen border-r border-slate-200 w-72 flex-col md:flex hidden shrink-0 relative">
