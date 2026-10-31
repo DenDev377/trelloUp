@@ -2,10 +2,10 @@ import SyncButton from "@/components/syncButton";
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-
-
+import { connection } from "next/server";
 
 export default async function boardPage() {
+    await connection();
     const session = await auth()
     if (!session?.user?.id) {
         redirect("/auth/login")
@@ -38,7 +38,7 @@ export default async function boardPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {boards.map((board) => (
-                        <div key={board.id} className="p-4 border rounded-lg shadow-sm bg-white">
+                        <div key={board.id} className="p-4 border-gray-200 border rounded-lg shadow-sm bg-white">
                             <h2 className="font-bold text-lg">{board.name}</h2>
                             <p className="text-sm text-gray-500 mt-1 line-clamp-2">
                                 {board.description || "Tidak ada deskripsi"}
