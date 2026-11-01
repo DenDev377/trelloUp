@@ -3,6 +3,8 @@ import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
+import Link from "next/link";
+
 
 export const instant = false;
 
@@ -40,7 +42,7 @@ export default async function boardPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {boards.map((board) => (
-                        <div key={board.id} className="p-4 border-gray-200 border rounded-lg shadow-sm bg-white">
+                        <Link key={board.id} href={`/dashboard/board-trello/${board.id}`} className="p-4 border-gray-200 border rounded-lg shadow-sm hover:border-slate-300 bg-white">
                             <h2 className="font-bold text-lg">{board.name}</h2>
                             <p className="text-sm text-gray-500 mt-1 line-clamp-2">
                                 {board.description || "Tidak ada deskripsi"}
@@ -48,7 +50,7 @@ export default async function boardPage() {
                             <p className="text-xs text-gray-400 mt-3">
                                 Terakhir sync: {board.syncedAt?.toLocaleString("id-ID") || "-"}
                             </p>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             )}
