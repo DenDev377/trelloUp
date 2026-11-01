@@ -1,6 +1,5 @@
 import NavbarComponent from "@/components/NavbarComponent";
 import SidebarComponent from "@/components/SidebarComponent";
-import { Divide } from "lucide-react";
 import { Suspense } from "react";
 
 export const instant = false;

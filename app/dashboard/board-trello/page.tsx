@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 
+export const instant = false;
+
 export default async function boardPage() {
     await connection();
     const session = await auth()
@@ -33,7 +35,7 @@ export default async function boardPage() {
 
             {boards.length === 0 ? (
                 <div className="p-8 text-center border-2 border-dashed rounded-lg bg-gray-50">
-                    <p className="text-gray-500">Belum ada board. Klik "Sync Trello" untuk mengambil data.</p>
+                    <p className="text-gray-500">Belum ada board. Klik &quot;Sync Trello&quot; untuk mengambil data.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { CheckCircle2, ExternalLink } from "lucide-react";
 import { connection } from "next/server";
 
+export const instant = false;
+
 export default async function SettingPage() {
     await connection();
     const session = await auth();
