@@ -1,4 +1,4 @@
-import SyncButton from "@/components/syncButton";
+import SyncButton from "@/components/SyncButton";
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
